@@ -1,20 +1,47 @@
 from django.urls import include, path
-from DummyApp import views
+from DummyApp.views import (
+    AuthorViewSet,
+    AverageCheckoutDurationViewSet,
+    BookViewSet,
+    CheckoutViewSet,
+    MemberOverdueBooksViewSet,
+    MemberViewSet,
+    MostActiveMemberViewSet,
+    MostPopularBooksViewSet,
+    ReservationViewSet,
+    load_bulk_data,
+)
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-router.register(r"authors", views.AuthorViewSet)
-router.register(r"books", views.BookViewSet)
-router.register(r"members", views.MemberViewSet)
-router.register(r"reservations", views.ReservationViewSet)
-router.register(r"checkouts", views.CheckoutViewSet)
+router.register(r"authors", AuthorViewSet, basename="author")
+router.register(r"books", BookViewSet, basename="books")
+router.register(r"members", MemberViewSet, basename="members")
+router.register(r"reservations", ReservationViewSet, basename="reservations")
+router.register(r"checkouts", CheckoutViewSet, basename="checkouts")
 
 
 urlpatterns = [
     path("", include(router.urls)),
-    path("get-overdue-books/", views.get_overdue_books),
-    path("get-overdue-books/member/<int:member_id>", views.get_overdue_books_by_member),
-    path("get-popular-books/", views.get_popular_book),
-    path("get-avg-checkout-time/", views.get_avg_checkout_time),
-    path("get-active-members/", views.get_active_members),
+    path(
+        "analytics/most-active-members/",
+        MostActiveMemberViewSet.as_view(),
+        name="most_active_members",
+    ),
+    path(
+        "analytics/average-checkout-durations/",
+        AverageCheckoutDurationViewSet.as_view(),
+        name="average_checkout_durations",
+    ),
+    path(
+        "analytics/most-popular-books/",
+        MostPopularBooksViewSet.as_view(),
+        name="most_popular_books",
+    ),
+    path(
+        "members/<int:member_id>/overdue/",
+        MemberOverdueBooksViewSet.as_view(),
+        name="member_overdue_book",
+    ),
+    path('load-bulk-data/', load_bulk_data, name='load_bulk_data')
 ]

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from DummyApp.models import *
+from DummyApp.models import Author, Book, Checkout, Member, Reservation
 
 
 # Create your serializers here.
@@ -7,8 +7,6 @@ class AuthorSerializer(serializers.ModelSerializer):
     """
     Author serializer class
     """
-
-    author_id = serializers.ReadOnlyField()
 
     class Meta:
         model = Author
@@ -20,8 +18,6 @@ class BookSerializer(serializers.ModelSerializer):
     Book serializer class
     """
 
-    book_id = serializers.ReadOnlyField()
-
     class Meta:
         model = Book
         fields = "__all__"
@@ -31,8 +27,6 @@ class MemberSerializer(serializers.ModelSerializer):
     """
     Member serializer class
     """
-
-    member_id = serializers.ReadOnlyField()
 
     class Meta:
         model = Member
@@ -44,7 +38,7 @@ class ReservationSerializer(serializers.ModelSerializer):
     Reservation serializer class
     """
 
-    reservation_id = serializers.ReadOnlyField()
+    queue_position = serializers.IntegerField(required=False)
 
     class Meta:
         model = Reservation
@@ -56,8 +50,12 @@ class CheckoutSerializer(serializers.ModelSerializer):
     Checkout serializer class
     """
 
-    checkout_id = serializers.ReadOnlyField()
+    return_date = serializers.DateField(required=False)
+    fine_amount = serializers.SerializerMethodField()
 
     class Meta:
         model = Checkout
         fields = "__all__"
+
+    def get_fine_amount(self, obj):
+        return obj.calculate_fine()
